@@ -12,7 +12,7 @@ class Movie extends CI_Controller {
 	public function actor($id="")
 	{
 		$actor_id = $this->uri->segment(3);
-		$this->load->view('movie/actor_detail', array('movie_id' => $actor_id));
+		$this->load->view('movie/actor_detail', array('actor_id' => $actor_id));
 	}
 
 	/* AJAX */
@@ -140,7 +140,36 @@ class Movie extends CI_Controller {
 	public function get_actor_by($option="id", $id=0)
 	{
 		$this->load->database();
-		$query = "select 
+		$query = "";
+
+		if ($option == "id")
+		{
+			$query = "select 
+					    *,
+						(select 
+					        count(f.film_id) as total_movie
+					    FROM
+					        film_actor fa
+					    join film f ON f.film_id = fa.film_id where fa.actor_id = ac.actor_id) as total_movie,
+					    (SELECT GROUP_CONCAT( distinct(cat.name) separator ',') as category 
+						  FROM film f 
+								join film_category fc on fc.film_id = f.film_id
+								join category cat on cat.category_id = fc.category_id
+					            join film_actor fa on fa.film_id = f.film_id where
+					            fa.actor_id = ac.actor_id) as movie_genre,
+						(SELECT count(distinct(fa.actor_id))
+						  FROM film f 
+								join film_actor fa on fa.film_id = f.film_id where
+					            fa.film_id in (select fa2.film_id from film_actor fa2 where fa2.actor_id = ac.actor_id)) as total_partner
+					from
+					    actor ac
+					where
+						ac.actor_id = ".$id;		
+			$result = $this->db->query($query)->row();
+		}
+		else if ($option == "film_id")
+		{
+			$query = "select 
 					    *
 					from
 					    actor ac join film_actor fa on fa.actor_id = ac.actor_id
@@ -148,8 +177,9 @@ class Movie extends CI_Controller {
 						fa.film_id = ".$id."
 					order by ac.first_name
 				  ";
-
-		$result = $this->db->query($query)->result();
+			$result = $this->db->query($query)->result();
+		}
+		
 		
 		$data['error_code'] = "0";
 		$data['error_msg'] = "Retrieving actor list is success";
