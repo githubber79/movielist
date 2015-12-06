@@ -28,11 +28,20 @@
 				return {movie_star_list:[]};
 			},
 			componentDidMount: function() {
-				this.loadMovieStar();    
+				this.loadMovieStar();
+				
+				setTimeout(function(){
+					var current_header = "";
+					$('#actor_list li').each(function(e, x){ 
+						a = $(x).text();
+						if (current_header != a[0]){
+							$(x).before('<li style="list-style-type:none;"><h1>'+a[0]+'</h1><hr/></li>');
+							current_header = a[0];
+						}
+					});
+				}, 1000);
 			},
 			loadMovieStar : function(){
-				console.log(this.props.actor2_id);
-
 				$.get('http://localhost/movielist/index.php/movie/get_actor_by/partner/'+actor_id, function(result) {
 					console.log(result);
 			      	if (this.isMounted()) {
@@ -43,20 +52,25 @@
 			    }.bind(this));
 			},
 			createMovieStarItem: function(item){
-				console.log(item);
-				return <MovieStarItem actor_id={item.actor_id} first_name={item.first_name} last_name={item.last_name} />;
+				return ( <MovieStarItem actor_id={item.actor_id} first_name={item.first_name} last_name={item.last_name} /> );
 			},
 			render: function() {
 				return (
 				    <div className="row">
 				    	<div className="col-md-12">
 				    		<br/>
-						    <ul>
+						    <ul id="actor_list">
 						    	{this.state.movie_star_list.map(this.createMovieStarItem)}
 						    </ul>
 				    	</div>
 				    </div>
 				);
+			}
+		});
+
+		var MovieStarItemHeader = React.createClass({
+			render: function(){
+
 			}
 		});
 
