@@ -60,7 +60,10 @@ class Movie extends CI_Controller {
 	public function get_movie_by($option="id", $id=0)
 	{
 		$this->load->database();
-		$query = "SELECT  f.film_id,
+
+		if ($option == "film_id")
+		{
+			$query = "SELECT  f.film_id,
 							f.title,
 							f.description,
 							f.release_year,
@@ -78,7 +81,33 @@ class Movie extends CI_Controller {
 				  		join film_category fc on fc.film_id = f.film_id
 				  		join category cat on cat.category_id = fc.category_id  where f.film_id = ".$id;
 
-		$result = $this->db->query($query)->row();
+			$result = $this->db->query($query)->row();
+		}
+		else if ($option == "actor_id")
+		{
+			$query = "SELECT  f.film_id,
+							f.title,
+							f.description,
+							f.release_year,
+							f.rental_duration,
+							f.rental_rate,
+							f.length as film_length,
+							f.replacement_cost,
+							f.rating,
+							f.special_features,
+							f.last_update,
+							l.name as dubbed,
+							cat.name as category,
+							(select count(ac.actor_id) from actor ac join film_actor fa on ac.actor_id = fa.actor_id where fa.film_id=f.film_id) as total_actor
+			  		FROM film f join language l on l.language_id = f.language_id 
+				  		join film_category fc on fc.film_id = f.film_id
+				  		join category cat on cat.category_id = fc.category_id  
+				  		join film_actor fa on fa.film_id = f.film_id
+				  		where fa.actor_id = ".$id;
+
+			$result = $this->db->query($query)->result();
+		}
+		
 		
 		$data['error_code'] = "0";
 		$data['error_msg'] = "Retrieving movie detail is success";

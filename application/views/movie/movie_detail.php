@@ -123,7 +123,7 @@
 				return { movie_data:{}, movie_id: movie_id };
 			},
 			loadMovie : function(page){
-				$.get('http://localhost/movielist/index.php/movie/get_movie_by/id/'+movie_id, function(result) {
+				$.get('http://localhost/movielist/index.php/movie/get_movie_by/film_id/'+movie_id, function(result) {
 					console.log(result);
 			      	if (this.isMounted()) {
 			        	this.setState({
