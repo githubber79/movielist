@@ -208,7 +208,15 @@ class Movie extends CI_Controller {
 				  ";
 			$result = $this->db->query($query)->result();
 		}
-		
+		else if ($option == 'partner')
+		{
+			$query = "SELECT distinct(fa.actor_id), ac.first_name, ac.last_name
+					  FROM film f 
+							join film_actor fa on fa.film_id = f.film_id 
+				            join actor ac on ac.actor_id = fa.actor_id where
+				            fa.film_id in (select fa2.film_id from film_actor fa2 where fa2.actor_id = ".$id.") order by ac.first_name";
+			$result = $this->db->query($query)->result();
+		}
 		
 		$data['error_code'] = "0";
 		$data['error_msg'] = "Retrieving actor list is success";

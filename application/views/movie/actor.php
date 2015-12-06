@@ -41,14 +41,13 @@
 		});
 
 		var Actor = React.createClass({
-			getInitialState: function(){
-				return {actor_url:"http://localhost/movielist/index.php/movie/actor/"+this.props.actor_id};
-			},
 			render: function() {
+				actor_url = ("http://localhost/movielist/index.php/movie/actor/"+this.props.actor_id);
+					
 				return(
 
 					<div style={{margin:'0px 5px 10px 5px'}} className="list-group-item">
-					    <h3 className="list-group-item-heading"><a href={this.state.actor_url} >{this.props.first_name} {this.props.last_name}</a></h3>
+					    <h3 className="list-group-item-heading"><a href={actor_url} >{this.props.first_name} {this.props.last_name}</a></h3>
 					    <hr />
 					    <div className="row">
 					    	<div className="col-md-3">

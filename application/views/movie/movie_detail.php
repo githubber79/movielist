@@ -16,7 +16,7 @@
 		<!-- footer -->
 		<?php $this->load->view('main/footer'); ?>
 			
-		<script src="<?php echo base_url(); ?>/assets/libs/reactjs/react.min.js"></script>
+		<script src="<?php echo base_url(); ?>/assets/libs/reactjs/react.js"></script>
 		<script src="<?php echo base_url(); ?>/assets/libs/reactjs/JSXTransformer.js"></script>
 		<script src="<?php echo base_url(); ?>/assets/libs/jquery/jquery.min.js"></script>
 		<script src="<?php echo base_url(); ?>/assets/libs/bootstrap/js/bootstrap.min.js"></script>
@@ -24,9 +24,6 @@
 		var movie_id = <?php echo $movie_id ?>;
 
 		var Movie = React.createClass({
-			getInitialState: function(){
-				return {movie_url:"http://localhost/movielist/index.php/movie/index/"+this.props.film_id};
-			},
 			render: function() {
 				return(
 					<div style={{margin:'0px 5px 10px 5px'}} className="list-group-item">
@@ -69,12 +66,11 @@
 		});
 		
 		var MovieStarItem = React.createClass({
-			getInitialState: function(){
-				return {actor_url:"http://localhost/movielist/index.php/movie/actor/"+this.props.actor_id};
-			},
 			render: function(){
+				actor_url = ("http://localhost/movielist/index.php/movie/actor/"+this.props.actor_id);
+				
 				return (
-					<li><a href={this.state.actor_url}>{this.props.first_name} {this.props.last_name}</a></li>
+					<li><a href={actor_url}>{this.props.first_name} {this.props.last_name}</a></li>
 				);	
 			}	
 		});

@@ -16,25 +16,14 @@
 		<!-- footer -->
 		<?php $this->load->view('main/footer'); ?>
 			
-		<script src="<?php echo base_url(); ?>/assets/libs/reactjs/react.min.js"></script>
+		<script src="<?php echo base_url(); ?>/assets/libs/reactjs/react.js"></script>
 		<script src="<?php echo base_url(); ?>/assets/libs/reactjs/JSXTransformer.js"></script>
 		<script src="<?php echo base_url(); ?>/assets/libs/jquery/jquery.min.js"></script>
 		<script src="<?php echo base_url(); ?>/assets/libs/bootstrap/js/bootstrap.min.js"></script>
 		<script type="text/jsx">
 		var actor_id = <?php echo $actor_id ?>;
 
-		var MovieStarItem = React.createClass({
-			getInitialState: function(){
-				return {actor_url:"http://localhost/movielist/index.php/movie/actor/"+this.props.actor_id};
-			},
-			render: function(){
-				return (
-					<li><a href={this.state.actor_url}>{this.props.first_name} {this.props.last_name}</a></li>
-				);	
-			}	
-		});
-
-		var MovieStar = React.createClass({
+		var ActorPartner = React.createClass({
 			getInitialState: function(){
 				return {movie_star_list:[]};
 			},
@@ -42,7 +31,9 @@
 				this.loadMovieStar();    
 			},
 			loadMovieStar : function(){
-				$.get('http://localhost/movielist/index.php/movie/get_actor_by/film_id/'+this.props.movie_id, function(result) {
+				console.log(this.props.actor2_id);
+
+				$.get('http://localhost/movielist/index.php/movie/get_actor_by/partner/'+actor_id, function(result) {
 					console.log(result);
 			      	if (this.isMounted()) {
 			        	this.setState({
@@ -57,38 +48,38 @@
 			},
 			render: function() {
 				return (
-					<div style={{margin:'0px 5px 10px 5px'}} className="list-group-item">
-					    <h4 className="list-group-item-heading">Actor/Actress who starred this movie: </h4>
-					    <hr />
-					    <div className="row">
-					    	<div className="col-md-12">
-							    <ul>
-							    	{this.state.movie_star_list.map(this.createMovieStarItem)}
-							    </ul>
-					    	</div>
-					    </div>
-					 </div>
+				    <div className="row">
+				    	<div className="col-md-12">
+				    		<br/>
+						    <ul>
+						    	{this.state.movie_star_list.map(this.createMovieStarItem)}
+						    </ul>
+				    	</div>
+				    </div>
 				);
 			}
 		});
 
+		var MovieStarItem = React.createClass({
+			render: function(){
+				actor_url = ("http://localhost/movielist/index.php/movie/actor/"+this.props.actor_id);
+				return (
+					<li><a href={actor_url}>{this.props.first_name} {this.props.last_name}</a></li>
+				);	
+			}	
+		});
+
 		var Movie = React.createClass({
-			getInitialState: function(){
-				return {movie_url:"http://localhost/movielist/index.php/movie/index/"+this.props.film_id};
-			},
 			render: function() {
+				movie_url = ("http://localhost/movielist/index.php/movie/index/"+this.props.film_id);
+				
 				return(
 					<div style={{margin:'0px 5px 10px 5px'}} className="list-group-item">
-					    <h3 className="list-group-item-heading"><a href={this.state.movie_url}>{this.props.title}</a></h3>
+					    <h3 className="list-group-item-heading"><a href={movie_url}>{this.props.title}</a></h3>
 					    <span className="label label-success">{this.props.category}</span> <span className="label label-info"> release year: {this.props.release_year}</span> <span className="label label-danger"> rating: {this.props.rating}</span>
 					    <hr />
 					    <div className="row">
-					    	<div className="col-md-3">
-					    		<div className="list-group">
-									<MovieStar movie_id={this.props.film_id} />
-								</div>
-					    	</div>
-					    	<div className="col-md-9">
+					    	<div className="col-md-12">
 							    <p className="list-group-item-text">
 							    	{this.props.description}.
 							    </p>
@@ -112,7 +103,7 @@
 			},
 			loadMovie : function(){
 				$.get('http://localhost/movielist/index.php/movie/get_movie_by/actor_id/'+actor_id, function(result) {
-					console.log(result);
+					// console.log(result);
 			      	if (this.isMounted()) {
 			        	this.setState({
 			        		movie_list: result.data
@@ -124,7 +115,7 @@
 				this.loadMovie();    
 			},
 			createMovieItem : function(mov) {
-					console.log(mov);
+					// console.log(mov);
 					return <Movie title={mov.title} description={mov.description} rental_duration={mov.rental_duration} 
 									rental_rate={mov.rental_rate} replacement_cost={mov.replacement_cost} 
 									dubbed={mov.dubbed} film_length={mov.film_length} special_features={mov.special_features}
@@ -168,16 +159,22 @@
 			},
 			loadActor : function(){
 				$.get('http://localhost/movielist/index.php/movie/get_actor_by/id/'+actor_id, function(result) {
-					console.log(result);
-			      	if (this.isMounted()) {
+					if (this.isMounted()) {
 			        	this.setState({
 			        		actor_data: result.data
 			        	});
 			      	}
 			    }.bind(this));
 			},
+			enableTab: function(){
+				$('#myTab a').click(function (e) {
+				  // e.preventDefault()
+				  $(this).tab('show')
+				})
+			},
 			componentDidMount: function() {
-				this.loadActor();    
+				this.loadActor();
+				this.enableTab();
 			},
 			render: function() {
 				return (
@@ -187,7 +184,14 @@
 						</div>
 						<ActorInfo movie_genre={this.state.actor_data.movie_genre} total_movie={this.state.actor_data.total_movie} total_partner={this.state.actor_data.total_partner} />
 						<hr />
-						<ActorStarredMovie actor_id={this.state.actor_data.actor_id} />
+						<ul className="nav nav-tabs" id="myTab">
+						  <li className="active"><a href="#movie">Starred Movie</a></li>
+						  <li><a href="#star">Star Partner</a></li>
+						</ul>
+						<div className="tab-content">
+						  <div className="tab-pane active" id="movie"><br/><ActorStarredMovie actor_id={this.state.actor_data.actor_id} /></div>
+						  <div className="tab-pane" id="star"><ActorPartner /></div>
+						</div>
 					</div>
 				);
 			}

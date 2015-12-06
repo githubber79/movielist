@@ -41,13 +41,12 @@
 		});
 
 		var Movie = React.createClass({
-			getInitialState: function(){
-				return {movie_url:"http://localhost/movielist/index.php/movie/index/"+this.props.film_id};
-			},
 			render: function() {
+				movie_url = ("http://localhost/movielist/index.php/movie/index/"+this.props.film_id);
+				
 				return(
 					<div style={{margin:'0px 5px 10px 5px'}} className="list-group-item">
-					    <h3 className="list-group-item-heading"><a href={this.state.movie_url}>{this.props.title}</a></h3>
+					    <h3 className="list-group-item-heading"><a href={movie_url}>{this.props.title}</a></h3>
 					    <span className="label label-success">{this.props.category}</span> <span className="label label-info"> release year: {this.props.release_year}</span> <span className="label label-danger"> rating: {this.props.rating}</span>
 					    <hr />
 					    <div className="row">
