@@ -16,8 +16,8 @@
           <li class="dropdown">
             <a href="#" class="dropdown-toggle" data-toggle="dropdown">Help <b class="caret"></b></a>
             <ul class="dropdown-menu">
-              <li><a href="<?php echo site_url('main/about'); ?>">About</a></li>
-              <li><a href="<?php echo site_url('main/credit'); ?>">Credits</a></li>
+              <!-- <li><a href="<?php echo site_url('main/about'); ?>">About</a></li> -->
+              <li><a href="<?php echo site_url('main/credits'); ?>">Credits</a></li>
             </ul>
           </li>
         </ul>

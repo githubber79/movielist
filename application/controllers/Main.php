@@ -36,11 +36,10 @@ class Main extends CI_Controller {
 
 	public function about()
 	{
-		
 	}
 
 	public function credits()
 	{
-		
+		$this->load->view('main/credit');
 	}
 }
