@@ -145,13 +145,19 @@ class Movie extends CI_Controller {
 							(select count(ac.actor_id) from actor ac join film_actor fa on ac.actor_id = fa.actor_id where fa.film_id=f.film_id) as total_actor
 				  FROM film f join language l on l.language_id = f.language_id 
 				  		join film_category fc on fc.film_id = f.film_id
-				  		join category cat on cat.category_id = fc.category_id where f.title like '%".$_POST['keyword']."%'  order by f.title
+				  		join category cat on cat.category_id = fc.category_id where f.title like '%".$_POST['keyword']."%'  
+				  		having (f.rental_duration >= ".$_POST['rental_duration']['min']." and f.rental_duration <= ".$_POST['rental_duration']['max'].")
+				  			and (f.rental_rate >= ".$_POST['rental_rate']['min']." and f.rental_rate <= ".$_POST['rental_rate']['max'].") 
+				  			and (f.replacement_cost >= ".$_POST['replacement_cost']['min']." and f.replacement_cost <= ".$_POST['replacement_cost']['max'].") 
+				  			and (f.length >= ".$_POST['video_length']['min']." and f.length <= ".$_POST['video_length']['max'].") 
+				  ORDER by f.title
 				  ".$limit;
 
 		$result = $this->db->query($query)->result();
 		
 		$data['error_code'] = "0";
 		$data['error_msg'] = "Retrieving movie list is success";
+		$data['last_query'] = $this->db->last_query();
 		$data['data'] = $result;
 
 		header("Access-Control-Allow-Origin: *");
