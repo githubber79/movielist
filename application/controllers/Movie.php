@@ -122,6 +122,48 @@ class Movie extends CI_Controller {
 	}
 
 	/* AJAX */
+	public function search_movie($idx=1)
+	{
+		$this->load->database();
+		$page = 10;
+		$start = ($idx - 1) * $page;
+		$limit = ' LIMIT '.$start.', '.$page;
+
+		$query = "SELECT  f.film_id,
+							f.title,
+							f.description,
+							f.release_year,
+							f.rental_duration,
+							f.rental_rate,
+							f.length as film_length,
+							f.replacement_cost,
+							f.rating,
+							f.special_features,
+							f.last_update,
+							l.name as dubbed,
+							cat.name as category,
+							(select count(ac.actor_id) from actor ac join film_actor fa on ac.actor_id = fa.actor_id where fa.film_id=f.film_id) as total_actor
+				  FROM film f join language l on l.language_id = f.language_id 
+				  		join film_category fc on fc.film_id = f.film_id
+				  		join category cat on cat.category_id = fc.category_id where f.title like '%".$_POST['keyword']."%'  order by f.title
+				  ".$limit;
+
+		$result = $this->db->query($query)->result();
+		
+		$data['error_code'] = "0";
+		$data['error_msg'] = "Retrieving movie list is success";
+		$data['data'] = $result;
+
+		header("Access-Control-Allow-Origin: *");
+		header("Access-Control-Allow-Methods: PUT, GET, POST");
+		header("Access-Control-Allow-Headers: Origin, X-Requested-With, Content-Type, Accept");
+		header('Content-Type: application/json; charset=UTF-8');
+		
+		echo json_encode($data);
+	}
+
+
+	/* AJAX */
 	public function get_actor($idx=1)
 	{
 		$this->load->database();

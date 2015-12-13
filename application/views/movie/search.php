@@ -14,14 +14,14 @@
 				<div class="page-header">
 					<h1>Search what movie you want to</h1>
 				</div>
-				<div id="movie_list">
+				<div id="movie_app">
 				</div>
 			</div>
 		</div>
 		<!-- footer -->
 		<?php $this->load->view('main/footer'); ?>
 			
-		<script src="<?php echo base_url(); ?>/assets/libs/reactjs/react.min.js"></script>
+		<script src="<?php echo base_url(); ?>/assets/libs/reactjs/react.js"></script>
 		<script src="<?php echo base_url(); ?>/assets/libs/reactjs/JSXTransformer.js"></script>
 		<script src="<?php echo base_url(); ?>/assets/libs/jquery/jquery.min.js"></script>
 		<script src="<?php echo base_url(); ?>/assets/libs/bootstrap/js/bootstrap.min.js"></script>
@@ -86,7 +86,7 @@
 		var MovieList = React.createClass({
 			getInitialState: function()
 			{
-				return { movie_list:[], prev_btn_status: false };
+				return { movie_list:[], prev_btn_status: false, search_keyword:"" };
 			},
 			handlePrev: function(){
 				movie_page -= 1;
@@ -97,20 +97,37 @@
 				this.loadMovie(movie_page);
 			},
 			loadMovie : function(page){
-				$.get('http://localhost/movielist/index.php/movie/get_movie/'+movie_page, function(result) {
-			      	if (this.isMounted()) {
-			        	this.setState({
-			        		movie_list: result.data
-			        	});
-			      	}
-			    }.bind(this));
+				react = this;
+				$.ajax({
+		            url : 'http://localhost/movielist/index.php/movie/search_movie/'+movie_page,
+		            data: 'keyword='+this.state.search_keyword,
+		            type: 'POST',
+		            beforeSend : function(xhr){
+		            },
+		            success : function(data){
+		                var res = data;
+		                if (react.isMounted()) {
+				        	react.setState({
+				        		movie_list: res.data
+				        	});
+				      	}
+					}
+		        }).done(function(){
+
+		        });
+			},
+			handleSearching: function(){
+			 	this.setState({
+		        		search_keyword: $('#search_keyword').val()
+	        	});
+		      	
+		      	this.loadMovie(1);
 			},
 			componentDidMount: function() {
-				this.loadMovie(1);    
+				this.loadMovie(1);
 			},
 			render: function() {
 				function createMovieItem(mov) {
-					console.log(mov);
 					return <Movie title={mov.title} description={mov.description} rental_duration={mov.rental_duration} 
 									rental_rate={mov.rental_rate} replacement_cost={mov.replacement_cost} 
 									dubbed={mov.dubbed} film_length={mov.film_length} special_features={mov.special_features}
@@ -118,16 +135,33 @@
 				}
 
 				return (
-					<div className="list-group">
+					<div>
+						<MovieSearch ops={this.handleSearching} />
 						<MoviePager prevEvent={this.handlePrev} nextEvent={this.handleNext} /> 
-						{this.state.movie_list.map(createMovieItem)}
+						<div className="list-group">
+							{this.state.movie_list.map(createMovieItem)}
+						</div>
 						<MoviePager prevEvent={this.handlePrev} nextEvent={this.handleNext} /> 
 					</div>
 
 				);
 			}
 		});
-
+		
+		var MovieSearch = React.createClass({
+			render: function(){
+				return (<div>
+							<form role="form">
+							  <div className="form-group">
+							    <label>Searching keyword</label>
+							    <input type="text" className="form-control" id="search_keyword" placeholder="Type your keyword here" />
+							  </div>
+							  <a onClick={this.props.ops} href="javascript:void(0);" className="btn btn-primary">Help me searching</a>
+							</form>
+						</div>);
+			}
+		});
+	
 		var MovieApp = React.createClass({
 			
 			render: function(){
@@ -138,7 +172,7 @@
 		});
 
 		// render komponen utama
-		React.render(<MovieApp />, document.getElementById('movie_list'));
+		React.render(<MovieApp />, document.getElementById('movie_app'));
 		</script>
 	</body>	
 </html>
